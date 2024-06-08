@@ -11,7 +11,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import DayWiseActivitiesCard from "./_components/DayWiseActivitiesCard";
 
 interface Row {
   name: string;
