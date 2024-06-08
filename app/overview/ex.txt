@@ -1,0 +1,104 @@
+'use client';
+import React, { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import Heatmap from "./_components/Heatmap";
+interface DayWiseActivity {
+  date: string;
+  items: {
+    children: {
+      count: string;
+      label: string;
+      fillColor: string;
+    }[];
+  };
+}
+
+// Define ActivityData with 'developers' property
+interface ActivityData  {
+  date: string;
+  developers: DeveloperActivity[];
+}
+
+interface DeveloperActivity {
+  name: string;
+  activityCounts: Record<string, number>;
+}
+
+const Analysis: React.FC = () => {
+  const [activityData, setActivityData] = useState<ActivityData[]>([]);
+  const [activityColors, setActivityColors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch("/data.json")
+      .then((response) => response.json())
+      .then((data) => {
+        const rows = data.data.AuthorWorklog.rows;
+
+        const transformedData: ActivityData[] = rows.flatMap((row: any) =>
+          row.dayWiseActivity.map((activity: DayWiseActivity) => ({
+            date: activity.date,
+            ...activity.items.children.reduce((acc, item) => {
+              acc[item.label] = parseInt(item.count);
+              return acc;
+            }, {} as { [key: string]: number }),
+          }))
+        );
+        console.log("Transformed Data:", transformedData); 
+
+        setActivityData(transformedData);
+
+        // Extract activity colors from the JSON data
+        const colors: Record<string, string> = {};
+        data.data.AuthorWorklog.activityMeta.forEach((activity: any) => {
+          colors[activity.label] = activity.fillColor;
+        });
+        setActivityColors(colors);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  return (
+    <div className="p-6 bg-gray-800 text-white rounded-lg shadow-xl">
+      <h1 className="text-3xl mb-6">Analysis</h1>
+
+      <Heatmap data={activityData} activityColors={activityColors}/>
+
+      <ResponsiveContainer width={1100} height={500}>
+        <LineChart data={activityData}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 0,
+          bottom: 0,
+        }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" className="" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {Object.keys(activityColors).map((key) => (
+            <Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={activityColors[key]}
+              activeDot={{ r: 8 }}
+              strokeWidth={2}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export default Analysis;
