@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 https://dashboard-developers-qja9.vercel.app/overview
 
 This project is a single-page application that visualizes organization developers' activity data throughout the day for a week. Activities tracked include committing code, opening pull requests, merging pull requests, attending meetings, and writing documentation.
+![image](https://github.com/user-attachments/assets/4651abc1-1e9f-4b20-8df5-4e3f9937c308)
 
 ![image](https://github.com/user-attachments/assets/174d1ee1-e0b4-4fd2-b77e-f9aab3115a8c)
 ![image](https://github.com/user-attachments/assets/0f253abf-b15f-4c78-b835-a00c12e7fa9e)
